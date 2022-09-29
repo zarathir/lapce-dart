@@ -4,7 +4,7 @@ use lapce_plugin::{
         lsp_types::{request::Initialize, DocumentFilter, DocumentSelector, InitializeParams, Url},
         Request,
     },
-    register_plugin, LapcePlugin, VoltEnvironment, PLUGIN_RPC,
+    register_plugin, LapcePlugin, PLUGIN_RPC,
 };
 use serde_json::Value;
 
@@ -16,13 +16,16 @@ register_plugin!(State);
 fn initialize(params: InitializeParams) -> Result<()> {
     let document_selector: DocumentSelector = vec![DocumentFilter {
         // lsp language id
-        language: Some(String::from("language_id")),
+        language: Some(String::from("dart")),
         // glob pattern
-        pattern: Some(String::from("**/*.{ext1,ext2}")),
+        pattern: Some(String::from("**/*.dart")),
         // like file:
         scheme: None,
     }];
     let mut server_args = vec![];
+
+    server_args.push("language-server".to_owned());
+    server_args.push("--lsp".to_owned());
 
     // Check for user specified LSP server path
     // ```
@@ -62,39 +65,7 @@ fn initialize(params: InitializeParams) -> Result<()> {
         }
     }
 
-    // Architecture check
-    let _ = match VoltEnvironment::architecture().as_deref() {
-        Ok("x86_64") => "x86_64",
-        Ok("aarch64") => "aarch64",
-        _ => return Ok(()),
-    };
-
-    // OS check
-    let _ = match VoltEnvironment::operating_system().as_deref() {
-        Ok("macos") => "macos",
-        Ok("linux") => "linux",
-        Ok("windows") => "windows",
-        _ => return Ok(()),
-    };
-
-    // Download URL
-    // let _ = format!("https://github.com/<name>/<project>/releases/download/<version>/{filename}");
-
-    // see lapce_plugin::Http for available API to download files
-
-    let _ = match VoltEnvironment::operating_system().as_deref() {
-        Ok("windows") => {
-            format!("{}.exe", "[filename]")
-        }
-        _ => "[filename]".to_string(),
-    };
-
-    // Plugin working directory
-    let volt_uri = VoltEnvironment::uri()?;
-    let server_path = Url::parse(&volt_uri)?.join("[filename]")?;
-
-    // if you want to use server from PATH
-    // let server_path = Url::parse(&format!("urn:{filename}"))?;
+    let server_path = Url::parse(&format!("urn:dart"))?;
 
     // Available language IDs
     // https://github.com/lapce/lapce/blob/HEAD/lapce-proxy/src/buffer.rs#L173
