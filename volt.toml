@@ -1,6 +1,19 @@
 name = "lapce-dart"
-version = "0.0.1"
+version = "0.1.0"
 author = "zarathir"
 display-name = "Dart"
 description = "Dart for Lapce: powered by dart language-server"
 wasm = "bin/lapce-dart.wasm"
+
+[activation]
+language = ["dart"]
+
+[config."volt.serverPath"]
+default = ""
+description = """
+Path to dart executable. If empty it tries to start from PATH
+"""
+
+[config."volt.serverArgs"]
+default = ""
+description = "Args to append after dart language-server"
