@@ -1,6 +1,17 @@
 name = "lapce-dart"
-version = "0.0.1"
+version = "0.1.0"
 author = "zarathir"
 display-name = "Dart"
 description = "Dart for Lapce: powered by dart language-server"
 wasm = "bin/lapce-dart.wasm"
+
+[activation]
+language = ["dart"]
+
+[config."serverPath"]
+default = ""
+description = "Path to dart executable"
+
+[config."serverArgs"]
+default = "language-server --client-id zarathir.lapce-dart --client-version 1.2"
+description = "Args for dart lsp"
