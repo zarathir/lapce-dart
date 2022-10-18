@@ -8,10 +8,12 @@ wasm = "bin/lapce-dart.wasm"
 [activation]
 language = ["dart"]
 
-[config."serverPath"]
+[config."volt.serverPath"]
 default = ""
-description = "Path to dart executable"
+description = """
+Path to dart executable. If empty it tries to start from PATH
+"""
 
-[config."serverArgs"]
-default = "language-server --client-id zarathir.lapce-dart --client-version 1.2"
-description = "Args for dart lsp"
+[config."volt.serverArgs"]
+default = ""
+description = "Args to append after dart language-server"
