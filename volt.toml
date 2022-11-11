@@ -4,6 +4,7 @@ author = "zarathir"
 display-name = "Dart"
 description = "Dart for Lapce: powered by dart language-server"
 wasm = "bin/lapce-dart.wasm"
+repository = "https://github.com/zarathir/lapce-dart"
 
 [activation]
 language = ["dart"]
@@ -17,3 +18,24 @@ Path to dart executable. If empty it tries to start from PATH
 [config."volt.serverArgs"]
 default = ""
 description = "Args to append after dart language-server"
+
+[config."suggestFromUnimportedLibraries"]
+default = true
+description = """
+Set to false to only show completion of already imported files.
+"""
+[config."closingLabels"]
+default = true
+description = """
+Render closing labels.
+"""
+[config."dart.enableSdkFormatter"]
+default = true
+description = """
+Use the SDK formatter.
+"""
+[config."dart.enableSnippets"]
+default = true
+description = """
+Include snippets such as "class", "stful", "switch" in code completion.
+"""
