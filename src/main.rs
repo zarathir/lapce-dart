@@ -1,8 +1,8 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use lapce_plugin::{
     psp_types::{
         lsp_types::{
-            request::Initialize, DocumentFilter, DocumentSelector, InitializeParams,
+            request::Initialize, DocumentFilter, DocumentSelector, InitializeParams, MessageType,
             Url,
         },
         Request,
@@ -16,7 +16,7 @@ struct State {}
 
 register_plugin!(State);
 
-fn initialize(params: InitializeParams) -> Result<()> {
+fn initialize(params: InitializeParams) -> Result<String> {
     let document_selector: DocumentSelector = vec![DocumentFilter {
         // lsp language id
         language: Some(String::from("dart")),
@@ -29,7 +29,7 @@ fn initialize(params: InitializeParams) -> Result<()> {
 
     if let Some(options) = params.initialization_options.as_ref() {
         if let Some(lsp) = options.get("volt") {
-            server_args.push(format!("language-server"));
+            server_args.push("language-server".to_string());
 
             if let Some(args) = lsp.get("serverArgs") {
                 if let Some(args) = args.as_array() {
@@ -49,8 +49,12 @@ fn initialize(params: InitializeParams) -> Result<()> {
                     let server_uri = if !server_path.is_empty() {
                         Url::parse(&format!("urn:{}", server_path))?
                     } else {
-                        Url::parse(&format!("urn:dart"))?
+                        return Err(anyhow!(
+                            "Path to Dart executable not set.\nSet the path in the settings."
+                        ));
                     };
+
+                    let uri = server_uri.clone();
 
                     PLUGIN_RPC.start_lsp(
                         server_uri,
@@ -58,13 +62,14 @@ fn initialize(params: InitializeParams) -> Result<()> {
                         document_selector,
                         params.initialization_options,
                     );
-                    return Ok(());
+
+                    return Ok(format!("Trying to start the Dart LSP from\n{}", uri));
                 }
             }
         }
     }
 
-    Ok(())
+    Err(anyhow!("Failed to start the plugin"))
 }
 
 impl LapcePlugin for State {
@@ -73,8 +78,15 @@ impl LapcePlugin for State {
         match method.as_str() {
             Initialize::METHOD => {
                 let params: InitializeParams = serde_json::from_value(params).unwrap();
-                if let Err(e) = initialize(params) {
-                    PLUGIN_RPC.stderr(&format!("plugin returned with error: {e}"))
+                match initialize(params) {
+                    Ok(msg) => {
+                        PLUGIN_RPC.window_log_message(MessageType::INFO, msg.clone());
+                        PLUGIN_RPC.window_show_message(MessageType::INFO, msg);
+                    }
+                    Err(e) => {
+                        PLUGIN_RPC.window_log_message(MessageType::ERROR, e.to_string());
+                        PLUGIN_RPC.window_show_message(MessageType::ERROR, e.to_string());
+                    }
                 }
             }
             _ => {}
