@@ -1,5 +1,5 @@
 name = "lapce-dart"
-version = "0.2.0"
+version = "0.3.0"
 author = "zarathir"
 display-name = "Dart"
 description = "Dart for Lapce: powered by dart language-server"
@@ -10,13 +10,13 @@ repository = "https://github.com/zarathir/lapce-dart"
 [activation]
 language = ["dart"]
 
-[config."volt.serverPath"]
+[config."serverPath"]
 default = ""
 description = """
 Path to dart executable.
 """
 
-[config."volt.serverArgs"]
+[config."serverArgs"]
 default = ""
 description = "Args to append after dart language-server"
 
